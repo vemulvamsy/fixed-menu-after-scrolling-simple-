@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>On Scroll Fix position - Tutorial</title>
+		<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+		<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+		<style>
+			html {color: rgb(150,150,150); font-size: 1.1em; font-family: Arial;}
+			body {max-width: 640px; margin: 0px auto; height: 2000px; border: 1px dotted rgb(200,200,200); border-top: 0px; border-bottom: 0px;}
+			header {background: rgb(230,230,230); text-align: center; border-bottom: 1px solid black; max-height: 380px; overflow: hidden;}
+			h1 {width: margin:20px; padding:20px; font-size: 4em; text-shadow: 1px 1px 3px rgb(180,180,180);color: white;}
+			h2 {text-shadow: 1px 1px 10px rgb(55,50,50), 1px 4px 4px white; color: rgb(230,230,230);}
+			h3 {text-shadow: 1px 1px 10px rgb(55,100,150), 1px 4px 4px white; color: rgb(50,100,150); border-bottom: 1px dashed rgb(150,150,150);}
+			menu {background: black; margin: 0px auto; padding: 0px; border-bottom: 1px solid black; position: absolute; width: 640px; font-size: 80%;}
+			menu a {display: block; float: left; padding: 1% 2.5% 1% 2.5%; text-decoration: none; color: white; width: 20%; text-align: center;}
+			menu a:hover {color: black; background: white;}
+			article {margin: 10px 10px 10px 10px; padding: 20px 30px;}
+			a.inline {display: block; padding-top: 30px;}
+		</style>
+		<script>
+$.fn.scrollView = function () {
+    return this.each(function () {
+        $('html, body').animate({
+            scrollTop: $(this).offset().top
+        }, 500);
+    });
+}
+$.fn.onScrollFix = function(lrpaddingsum) {
+	var meTop = $(this).offset().top;
+	var self = this;
+	$(window).resize(function(){$(self).width($(self).parent().width()-lrpaddingsum);});
+	window.onscroll = function(){
+		return self.each(function() {
+			var scTop = ($(window).scrollTop());
+			if(parseInt(meTop) - parseInt(scTop) < 0 ){
+				$(self).css({"position":"fixed", "top": "0", "width":$(this).parent().width()-lrpaddingsum});
+			}
+			else if(parseInt(scTop) <= parseInt(meTop)) {
+				$(self).css({"position":"absolute", "top": parseInt(meTop) + "px", "width":$(this).parent().width()-lrpaddingsum});
+			}
+		});
+	}
+}
+		$(function(){
+				$("menu").onScrollFix(0);
+				$("menu a").on("click", function(){
+               $("a[name='" + $(this).attr("href").substring(1) + "']").scrollView();
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<header>
+		   <a class="inline" name="PageTop"></a>
+			<h1>On Scroll Fix position - Tutorial</h1>
+			<h2>Horizontal menu fix</h2>
+		</header>
+		<menu>
+			<a href="#TheScript">The Script</a>		
+			<a href="#HowItWorks">The Action</a>		
+			<a href="#WhatToHave">To Have</a>	
+			<a href="#PageTop">Page Top</a>	
+			<br clear="both" />	
+		</menu>
+		<article>
+			<a class="inline" name="TheScript"></a>
+			<h3>What the script is:</h3>
+				<p>Just to show what can be accomplished with few lines of jQuery code.</p>
+<pre  style="font-family:arial;font-size:12px;border:1px dashed #CCCCCC;width:99%;height:auto;overflow:auto;background:#f0f0f0;;background-image:URL(http://2.bp.blogspot.com/_z5ltvMQPaa8/SjJXr_U2YBI/AAAAAAAAAAM/46OqEP32CJ8/s320/codebg.gif);padding:0px;color:#000000;text-align:left;line-height:20px;"><code class="prettyprint lang-js">
+1:  $.fn.onScrollFix = function(lrpaddingsum) {  
+2:       var meTop = $(this).offset().top;  
+3:       var self = this;  
+4:       $(window).resize(function(){$(self).width($(self).parent().width()-lrpaddingsum);});  
+5:       window.onscroll = function(){  
+6:            return self.each(function() {  
+7:                 var scTop = ($(window).scrollTop());  
+8:                 if(parseInt(meTop) - parseInt(scTop) &lt; 0 ){  
+9:                      $(self).css({"position":"fixed", "top": "0", "width":$(this).parent().width()-lrpaddingsum});  
+10:                 }  
+11:                 else if(parseInt(scTop) &lt;= parseInt(meTop)) {  
+12:                      $(self).css({"position":"absolute", "top": parseInt(meTop) + "px", "width":$(this).parent().width()-lrpaddingsum});  
+13:                 }  
+14:            });  
+15:       }  
+16:  }
+  
+</code></pre>
+      <p>Actually the code is a jQuery function. This function is to be called on elements you want to stay on the screen after scrolling down to view the content of your page. This elements can be navigation menus (as in this example) or maybe other important stuff, such as adverts.</p>
+      <p>This solution is very usefull also on mobile versions of your pages. You can have allways visible, responsive navigation bar on top with this code.</p>
+      <a class="inline" name="HowItWorks"></a>
+      <h3>How it works?</h3>
+      <p>The <u>lrpaddingsum</u> variable is to stay with your element in the parent. If you have paddings on left or right (or both) sides of your element, you will have to give this sum (so left and right padding sum) at the call of the function.</p>
+      <p>Take line 1 and 2 from the script:</p>
+         <ol>
+            <li>Stores the acutal offset of your element from the top of the screen.</li>
+            <li>is to resolve the $(<b>this</b>) issue</li>
+         </ol>
+      <p> The <i>$(<b>window</b>).resize()</i> row is to stay responsive. It adjusts the width of the element to the width of the parent element (using the <u>lrpaddingsum</u> variable.</p> 
+      <p> The <i>$(<b>window</b>).onscroll()</i> is the magic part. Actually not a big deal. It checks whether your element is already at the top or not. If not, then the position stays <i>relative</i>. Once you hit the top of the page with your element, the position changes to <i>fixed</i>. And this is it.</p>
+      <a class="inline" name="WhatToHave"></a>
+      <h3>What you'll need more?</h3>
+      <p>Since this is a jQuery code, you'll need the jQuery library for you to work. Which you call in the head section of your html. Full working example bellow:</p>
+<pre  style="font-family:arial;font-size:12px;border:1px dashed #CCCCCC;width:99%;height:auto;overflow:auto;background:#f0f0f0;;background-image:URL(http://2.bp.blogspot.com/_z5ltvMQPaa8/SjJXr_U2YBI/AAAAAAAAAAM/46OqEP32CJ8/s320/codebg.gif);padding:0px;color:#000000;text-align:left;line-height:20px;"><code class="prettyprint lang-html"> &lt;!DOCTYPE html&gt;  
+ &lt;html&gt;  
+   &lt;head&gt;  
+           &lt;title&gt;On Scroll Fix position - Tutorial&lt;/title&gt;  
+           &lt;script src="http://code.jquery.com/jquery-1.10.1.min.js"&gt;&lt;/script&gt;  
+           &lt;script&gt;  
+             // - your scrollFix  
+    $.fn.onScrollFix = function(lrpaddingsum) {  
+         var meTop = $(this).offset().top;  
+         var self = this;  
+         $(window).resize(function(){$(self).width($(self).parent().width()-lrpaddingsum);});  
+         window.onscroll = function(){  
+              return self.each(function() {  
+                   var scTop = ($(window).scrollTop());  
+                   if(parseInt(meTop) - parseInt(scTop) &lt; 0 ){  
+                        $(self).css({"position":"fixed", "top": "0", "width":$(this).parent().width()-lrpaddingsum});  
+                   }  
+                   else if(parseInt(scTop) &lt;= parseInt(meTop)) {  
+                        $(self).css({"position":"absolute", "top": parseInt(meTop) + "px", "width":$(this).parent().width()-lrpaddingsum});  
+                   }  
+              });  
+         }  
+    }  
+      // - jQuery ready  
+           $(function(){  
+                     $("menu").onScrollFix(0);  
+                });            
+           &lt;/script&gt;  
+           &lt;style&gt;  
+             body {font-family: verdana; font-size: 10pt; color: rgb(200,200,200); max-width: 320px; margin: 20px auto; height: 2000px; box-shadow: 0px 0px 10px rgb(150,150,150);}  
+             header {height: 300px; text-align: center; background: white; marigin: 0px; padding: 0px;}  
+             menu {background: white; box-shadow: 1px 2px 17px rgb(110,110,110); margin: 0px auto; padding: 0px; width: 320px;}  
+             menu a {display: block; float: left; padding: 1% 2.5% 1% 2.5%; text-decoration: none; color: green; width: 20%; text-align: center;}  
+           &lt;/style&gt;  
+      &lt;/head&gt;  
+      &lt;body&gt;  
+        &lt;header&gt;&lt;h1&gt;OnScrollFix tutorial&lt;/h1&gt;&lt;/header&gt;  
+        &lt;menu&gt;&lt;a href="#"&gt;1st&lt;/a&gt;&lt;a href="#"&gt;2nd&lt;/a&gt;&lt;a href="#"&gt;3rd&lt;/a&gt;&lt;a href="#"&gt;4th&lt;/a&gt;&lt;br clear="both" /&gt;&lt;/menu&gt;  
+      &lt;/body&gt;  
+ &lt;/html&gt;  
+</code></pre>
+      <p>Feel free to use it, share it, spread the word...</p>
+		</article>
+	</body>
+</html>
